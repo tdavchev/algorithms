@@ -1,0 +1,16 @@
+[3, 34, 4, 12, 5, 2]
+
+def recursive_call()
+
+    if target == count:
+        print(output)
+
+    if digit >= target:
+        return
+    else:
+        for i in range(start, end):
+            start = i
+            count += arr[i]
+            output.add(i)
+            recursive_call(start, end, target, output)
+            output.pop(len(output)-1)
