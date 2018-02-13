@@ -16,7 +16,7 @@ def iterative_inorder(root):
 
     stack = []
 
-    while len(stack) != 0 or root != None:
+    while len(stack) > 0 or root != None:
         if root != None:
             stack.append(root)
             root = root.left
@@ -24,6 +24,30 @@ def iterative_inorder(root):
 
         print(stack[-1].data)
         root = stack.pop().right
+            
+
+def find_inorder_successor(root, node):
+    if root == None:
+        return None
+
+    stack = []
+    prev = False
+
+    while len(stack) != 0 or root != None:
+        if root != None:
+            stack.append(root)
+            root = root.left
+            continue
+        
+        if prev:
+            print(stack[-1].data)
+            return
+
+        if stack[-1].data == node.data:
+            prev = True
+        
+        root = stack.pop().right
+
 
 root = TreeNode(100)
 ele1 = TreeNode(50)
@@ -40,4 +64,4 @@ ele1.set_right(ele3)
 ele4.set_left(ele5)
 ele4.set_right(ele6)
 
-iterative_inorder(root)
+find_inorder_successor(root, ele6)
