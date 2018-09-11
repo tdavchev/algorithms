@@ -1,0 +1,114 @@
+#!/usr/bin/env python
+
+'''
+Command line tool based on Python 3.
+Functionality:
+1) Outer-join point-wise addition of data-frames.
+2) 
+
+To use as a command line tool: 
+1) chmod +x qs
+2) export PATH=$PATH:$(pwd)
+
+author: Todor Davchev
+date: 25.03.2018
+'''
+
+import csv, sys, re
+import numpy as np
+from typing import Tuple, Dict, AbstractSet, List
+
+class NaMaikaTi():
+    def __init__(self):
+        Special = Dict[str, float]
+        DoubleSpecial = Dict[str, Special]
+        ListStr = List[str]
+        AbSet = AbstractSet[str]
+        DDictCol = Tuple[DoubleSpecial, ListStr]
+
+    def get_columns_set(content:ListStr, columns:AbSet ) -> AbSet:
+        for col in content:
+            columns.add("".join(re.findall("[a-zA-Z]+", col)))
+
+        return columns
+
+    def get_columns_list(content:ListStr, columns:ListStr) -> ListStr:
+        for col in content:
+            columns.append("".join(re.findall("[a-zA-Z]+", col)))
+
+        return columns
+
+    def _return(dct: DoubleSpecial, columns: ListStr) -> None:
+        print("", end=",")
+        for idx, col in enumerate(columns):
+            if idx < len(columns)-1:
+                print(col, end=",")
+            else:
+                print(col)
+
+        for row_key in dct:
+            print(row_key, end=",")
+            for idx, col_key in enumerate(columns):
+                if idx < len(columns)-1:
+                    if col_key in dct[row_key].keys():
+                        print(dct[row_key][col_key], end=",")
+                    else:
+                        print(0.0, end=",")
+                else:
+                    if col_key in dct[row_key].keys():
+                        print(dct[row_key][col_key])
+                    else:
+                        print(0.0)
+
+    def outer_join(data: ListStr, columns: ListStr, data_struct: DoubleSpecial) -> DDictCol:
+        for text in data:
+            split_row = text.split(",")
+            month = split_row[0]
+            content = split_row[1:]
+            if len(month) < 2: # if it starts with "" then we are looking at the column names row
+                curr_cols = get_columns_list(content, [])
+                columns = get_columns_set(content, columns)
+            else: # first col is month and year
+                month = month.replace('"', '')
+                if month in data_struct.keys(): # might have not considered all current collumn names
+                    for idx, column in enumerate(curr_cols):
+                        if column in data_struct[month].keys():
+                            if split_row[idx+1] != "":
+                                data_struct[month][column] += float(split_row[idx+1])
+                        else:
+                            if split_row[idx+1] != "":
+                                data_struct[month][column] = float(split_row[idx+1])
+                else:
+                    data_struct[month] = {curr_cols[i]: float(split_row[i+1]) for i in range(len(curr_cols)) if split_row[i+1] != ""}
+
+        return data_struct, columns
+
+    def process(data: ListStr, action:str) -> None:
+        columns = set()
+        data_struct = {}
+        if action == "+":
+            data_struct, columns = outer_join(data, columns, data_struct)
+
+        columns = sorted(columns)
+        _return(data_struct, columns)
+
+    def main():
+        script = sys.argv[0]
+        action = sys.argv[1]
+        assert action in ['+'], \
+            'Action is not one of +: ' + action
+
+        data = []
+        while True:
+            line = sys.stdin.readline()
+            if not line:
+                break
+            words = line.split()
+            if len(words) > 0:
+                for word in words:
+                    data.append(word)
+
+        process(data, action)
+
+    # if __name__ == '__main__':
+    #     main()

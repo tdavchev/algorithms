@@ -25,7 +25,7 @@ def binary_search(arr, st, end, key):
 
   return -1
 
-def binary_search_rotated(arr, key):
+def binary_search_rotated2(arr, key):
   return binary_search(arr, 0, len(arr)-1, key)
 
 arr = [6,7,8,1,2,3,4,5]

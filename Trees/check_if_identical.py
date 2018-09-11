@@ -21,3 +21,5 @@ def identical(root1, root2):
             identical(root1.right, root2.right))
 
     return False
+
+

@@ -10,6 +10,25 @@ class TreeNode():
     def set_left(self, data):
         self.left = data
 
+def checkBST(root):
+    collection = set()
+    bst = True
+    node = root
+    q = []
+    while node is not None or len(q) > 0:
+        if node != None:
+            if node.data in collection or node.left.data > node.data or node.right.data < node.data:
+                bst = False
+                break
+            collection.add(node.data)
+            q.append(node)
+            node = node.left
+            continue
+ 
+        node = q.pop().right
+    print("I broke..")
+    return bst
+
 def isBST(root):
     if root == None:
         return False
@@ -53,5 +72,5 @@ ele1.set_right(ele3)
 ele4.set_left(ele5)
 ele4.set_right(ele6)
 
-print(isBST(root))
+print(checkBST(root))
     
